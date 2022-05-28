@@ -4,22 +4,38 @@ let equals = document.querySelectorAll('.equals');
 let clean=document.querySelectorAll('.clear');
 const viewer=document.querySelector('.viewport');
 const calcText=document.createElement('div');
+calcText.classList.add("calcText");
 let displayDig='';
 let numbers =[];
 let operations = [];
 
 function clear(){
-    console.log("doing it");
     displayDig ="";
     calcText.textContent =displayDig;
     numbers = [];
     operations =[];
-    console.log(numbers);
-    console.log(operations);
 }
 
 function growNumber(digit){
-    displayDig += digit.id;
+    if(displayDig.length > 10){
+        return;
+    }
+    if(digit.id === "."){
+        if (!displayDig.includes(".")){
+            displayDig += ".";
+        } else{
+            return;
+        }
+    } else if(digit.id == "-"){
+        if(displayDig[0] == "-"){
+            displayDig = displayDig.substring(1,displayDig.length);
+        } else{
+            let neg="-";
+            displayDig=neg.concat(displayDig);
+        }
+    } else{
+        displayDig += digit.id;
+    }
     calcText.textContent= displayDig;
     viewer.appendChild(calcText);
 }
@@ -31,8 +47,6 @@ function beginOperation(op){
     numbers.push(parseFloat(displayDig));
     displayDig='';
     operations.push(op.id);
-    console.log(numbers);
-    console.log(operations);
 }
 
 function sum(firstVal, secondVal){
@@ -45,6 +59,9 @@ function difference(firstVal, secondVal){
     return(firstVal-secondVal);
 }
 function quotient(firstVal, secondVal){
+    if(secondVal==0){
+        return "OOPS";
+    }
     return(firstVal/secondVal);
 }
 function performOperation(firstVal, secondVal, op){
@@ -72,7 +89,11 @@ function runOperations(){
         numbers.unshift(performOperation(firstVal, secondVal, op));
     }
     console.log(numbers);
-    displayDig=numbers[0];
+    displayDig=numbers.shift().toString();
+    if(displayDig.length >10){
+        displayDig=displayDig.substring(0,11);
+    }
+    operations=[];
     calcText.textContent=displayDig;
 }
 digits.forEach(digit => digit.addEventListener('click', () => growNumber(digit)))
